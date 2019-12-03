@@ -1,0 +1,141 @@
+#include <string.h>
+#include <stdio.h>
+
+#define TITRE_SIZE 40
+
+EXEC SQL INCLUDE SQLCA.H;
+
+void connexion();
+void recherche();
+void creation();
+void deconnexion();
+
+int main(void)
+	{
+	connexion();
+	char action;
+	
+	do
+		{
+		printf("Souhaitez-vous faire une recherche(R) ou créer une table(C) ?\n");
+		scanf("%c", &action);
+
+		if(action=='r' || action=='R')
+			{
+			recherche();
+			}
+		else if (action=='c' || action=='C')
+			{
+			creation();
+			}
+		else
+			{
+			printf("Je n'ai pas compris la demande\n");
+			}
+		}
+	while (action!='r' && action!='R' && action!='c' && action!='C');
+
+	deconnexion();
+
+	return 0;
+	}
+
+
+void connexion()
+	{
+	EXEC SQL BEGIN DECLARE SECTION;
+	char login[20];
+	char pwd[20];
+	EXEC SQL END DECLARE SECTION;
+	printf("login?");
+	scanf("%s", login);
+	printf("pwd?");
+	scanf("%s", pwd);
+	EXEC SQL connect :login identified by :pwd;
+	}
+
+void recherche()
+	{
+	EXEC SQL BEGIN DECLARE SECTION;
+	char larecherche[40];
+	char resultat[100][TITRE_SIZE+1];
+	EXEC SQL END DECLARE SECTION;
+	int indice_res, choix;
+	printf("\n\n\n\n\n\n\n\n\n");
+	printf("Entrez le numéro de la catégorie choisie\n");
+	printf("1.Auteur\n");
+	printf("2.Période\n");
+	printf("3.Termes dans le titre\n");
+	printf("4.Termes dans le texte du message\n");
+	printf("5.Thème\n");
+	printf("6.Sujets les plus vus\n");
+	printf("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n");
+	scanf("%d",&choix);
+	printf("Recherche: ");
+	sscanf("%s",larecherche);
+
+	switch (choix)
+		{
+		case 1:
+			EXEC SQL select titre into :resultat from Contenu where Auteur = :larecherche;
+			for(indice_res=0;indice_res<100;indice_res++)
+				{
+				printf(resultat[indice_res]);
+				printf("\n");
+				}
+			break;
+		case 2:
+	
+			break;
+	
+		case 3:
+	
+			break;
+	
+		case 4:
+	
+			break;
+			
+		case 5:
+	
+			break;
+			
+		case 6:
+		
+			break;
+			
+		default:
+			printf("Saissisez un numéro correcte\n");
+		}
+
+	}
+
+
+
+
+void creation()
+	{
+	char titre[TITRE_SIZE+1], contenu[1000];
+	
+	printf("Titre: ");
+	scanf("%s",titre);
+	
+	printf("Contenu (sans retour chariot): ");
+	scanf("%s",contenu);
+	}
+
+
+
+void deconnexion()
+	{
+	EXEC SQL commit release;
+	}
+
+
+
+
+
+
+
+
+
