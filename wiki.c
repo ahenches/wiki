@@ -129,15 +129,22 @@ static const int IAPFAIL = 1403;
 static const int IAPFTL  = 535;
 extern void sqliem(unsigned char *, signed int *);
 
+ static const char *sq0002 = 
+"select titre ,auteur ,texte  from contenu            ";
+
 typedef struct { unsigned short len; unsigned char arr[1]; } VARCHAR;
 typedef struct { unsigned short len; unsigned char arr[1]; } varchar;
 
 /* cud (compilation unit data) array */
 static const short sqlcud0[] =
 {13,4130,1,0,0,
-5,0,0,0,0,0,27,54,0,0,4,4,0,1,0,1,97,0,0,1,97,0,0,1,10,0,0,1,10,0,0,
-36,0,0,2,52,0,4,80,0,0,2,1,0,1,0,2,97,0,0,1,97,0,0,
-59,0,0,3,0,0,30,131,0,0,0,0,0,1,0,
+5,0,0,0,0,0,27,58,0,0,4,4,0,1,0,1,97,0,0,1,97,0,0,1,10,0,0,1,10,0,0,
+36,0,0,2,53,0,9,92,0,0,0,0,0,1,0,
+51,0,0,2,0,0,13,93,0,0,3,0,0,1,0,2,97,0,0,2,97,0,0,2,97,0,0,
+78,0,0,2,0,0,13,98,0,0,3,0,0,1,0,2,97,0,0,2,97,0,0,2,97,0,0,
+105,0,0,2,0,0,13,110,0,0,4,1,0,1,0,1,3,0,0,2,97,0,0,2,97,0,0,2,97,0,0,
+136,0,0,2,0,0,15,112,0,0,0,0,0,1,0,
+151,0,0,3,0,0,30,160,0,0,0,0,0,1,0,
 };
 
 
@@ -145,6 +152,8 @@ static const short sqlcud0[] =
 #include <stdio.h>
 
 #define TITRE_SIZE 40
+#define TEXT_SIZE 400
+#define AUTHOR_SIZE 30
 
 /* EXEC SQL INCLUDE SQLCA.H;
  */ 
@@ -259,11 +268,13 @@ int main(void)
 	connexion();
 	char action;
 	
+	printf("Souhaitez-vous faire une recherche(R) ou créer une table(C) ?\n");
+	scanf("%c", &action);
 	do
 		{
 		printf("Souhaitez-vous faire une recherche(R) ou créer une table(C) ?\n");
 		scanf("%c", &action);
-
+		printf("%c", action);
 		if(action=='r' || action=='R')
 			{
 			recherche();
@@ -352,10 +363,14 @@ void recherche()
 	/* EXEC SQL BEGIN DECLARE SECTION; */ 
 
 	char larecherche[40];
-	char resultat[100][TITRE_SIZE+1];
+	int cursor;
+	char titre[TITRE_SIZE+1];
+	char auteur[AUTHOR_SIZE+1];
+	char texte[TEXT_SIZE+1];
+	int choix;
 	/* EXEC SQL END DECLARE SECTION; */ 
 
-	int indice_res, choix;
+	int indice_res, compteur;
 	printf("\n\n\n\n\n\n\n\n\n");
 	printf("Entrez le numéro de la catégorie choisie\n");
 	printf("1.Auteur\n");
@@ -366,88 +381,272 @@ void recherche()
 	printf("6.Sujets les plus vus\n");
 	printf("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n");
 	scanf("%d",&choix);
-	printf("Recherche: ");
-	sscanf("%s",larecherche);
-
-	switch (choix)
+	do
 		{
-		case 1:
-			/* EXEC SQL select titre into :resultat from Contenu where Auteur = :larecherche; */ 
+		printf("Recherche: ");
+		scanf("%s",larecherche);
+		
+		switch (choix)
+			{
+			case 1:
+				compteur = 0;
+				/* EXEC SQL DECLARE cursor SCROLL CURSOR FOR SELECT titre, auteur, texte FROM contenu; */ 
+// where auteur = :larecherche;
+				/* EXEC SQL OPEN cursor; */ 
 
 {
-   struct sqlexd sqlstm;
-   sqlstm.sqlvsn = 13;
-   sqlstm.arrsiz = 4;
-   sqlstm.sqladtp = &sqladt;
-   sqlstm.sqltdsp = &sqltds;
-   sqlstm.stmt = "select titre into :b0  from Contenu where Auteur=:b1";
-   sqlstm.iters = (unsigned int  )100;
-   sqlstm.offset = (unsigned int  )36;
-   sqlstm.selerr = (unsigned short)1;
-   sqlstm.sqlpfmem = (unsigned int  )0;
-   sqlstm.cud = sqlcud0;
-   sqlstm.sqlest = (unsigned char  *)&sqlca;
-   sqlstm.sqlety = (unsigned short)4352;
-   sqlstm.occurs = (unsigned int  )0;
-   sqlstm.sqhstv[0] = (unsigned char  *)resultat;
-   sqlstm.sqhstl[0] = (unsigned long )41;
-   sqlstm.sqhsts[0] = (         int  )41;
-   sqlstm.sqindv[0] = (         short *)0;
-   sqlstm.sqinds[0] = (         int  )0;
-   sqlstm.sqharm[0] = (unsigned long )0;
-   sqlstm.sqharc[0] = (unsigned long  *)0;
-   sqlstm.sqadto[0] = (unsigned short )0;
-   sqlstm.sqtdso[0] = (unsigned short )0;
-   sqlstm.sqhstv[1] = (unsigned char  *)larecherche;
-   sqlstm.sqhstl[1] = (unsigned long )40;
-   sqlstm.sqhsts[1] = (         int  )40;
-   sqlstm.sqindv[1] = (         short *)0;
-   sqlstm.sqinds[1] = (         int  )0;
-   sqlstm.sqharm[1] = (unsigned long )0;
-   sqlstm.sqadto[1] = (unsigned short )0;
-   sqlstm.sqtdso[1] = (unsigned short )0;
-   sqlstm.sqphsv = sqlstm.sqhstv;
-   sqlstm.sqphsl = sqlstm.sqhstl;
-   sqlstm.sqphss = sqlstm.sqhsts;
-   sqlstm.sqpind = sqlstm.sqindv;
-   sqlstm.sqpins = sqlstm.sqinds;
-   sqlstm.sqparm = sqlstm.sqharm;
-   sqlstm.sqparc = sqlstm.sqharc;
-   sqlstm.sqpadto = sqlstm.sqadto;
-   sqlstm.sqptdso = sqlstm.sqtdso;
-   sqlcxt((void **)0, &sqlctx, &sqlstm, &sqlfpn);
+    struct sqlexd sqlstm;
+    sqlstm.sqlvsn = 13;
+    sqlstm.arrsiz = 4;
+    sqlstm.sqladtp = &sqladt;
+    sqlstm.sqltdsp = &sqltds;
+    sqlstm.stmt = sq0002;
+    sqlstm.iters = (unsigned int  )1;
+    sqlstm.offset = (unsigned int  )36;
+    sqlstm.selerr = (unsigned short)1;
+    sqlstm.sqlpfmem = (unsigned int  )0;
+    sqlstm.cud = sqlcud0;
+    sqlstm.sqlest = (unsigned char  *)&sqlca;
+    sqlstm.sqlety = (unsigned short)4352;
+    sqlstm.occurs = (unsigned int  )0;
+    sqlstm.sqcmod = (unsigned int )1;
+    sqlcxt((void **)0, &sqlctx, &sqlstm, &sqlfpn);
+}
+
+ 
+				/* EXEC SQL FETCH ABSOLUTE 0 cursor INTO :titre, :auteur, :texte; */ 
+
+{
+    struct sqlexd sqlstm;
+    sqlstm.sqlvsn = 13;
+    sqlstm.arrsiz = 4;
+    sqlstm.sqladtp = &sqladt;
+    sqlstm.sqltdsp = &sqltds;
+    sqlstm.iters = (unsigned int  )1;
+    sqlstm.offset = (unsigned int  )51;
+    sqlstm.selerr = (unsigned short)1;
+    sqlstm.sqlpfmem = (unsigned int  )0;
+    sqlstm.cud = sqlcud0;
+    sqlstm.sqlest = (unsigned char  *)&sqlca;
+    sqlstm.sqlety = (unsigned short)4352;
+    sqlstm.occurs = (unsigned int  )0;
+    sqlstm.sqfoff = (         int )0;
+    sqlstm.sqfmod = (unsigned int )32;
+    sqlstm.sqhstv[0] = (unsigned char  *)titre;
+    sqlstm.sqhstl[0] = (unsigned long )41;
+    sqlstm.sqhsts[0] = (         int  )0;
+    sqlstm.sqindv[0] = (         short *)0;
+    sqlstm.sqinds[0] = (         int  )0;
+    sqlstm.sqharm[0] = (unsigned long )0;
+    sqlstm.sqadto[0] = (unsigned short )0;
+    sqlstm.sqtdso[0] = (unsigned short )0;
+    sqlstm.sqhstv[1] = (unsigned char  *)auteur;
+    sqlstm.sqhstl[1] = (unsigned long )31;
+    sqlstm.sqhsts[1] = (         int  )0;
+    sqlstm.sqindv[1] = (         short *)0;
+    sqlstm.sqinds[1] = (         int  )0;
+    sqlstm.sqharm[1] = (unsigned long )0;
+    sqlstm.sqadto[1] = (unsigned short )0;
+    sqlstm.sqtdso[1] = (unsigned short )0;
+    sqlstm.sqhstv[2] = (unsigned char  *)texte;
+    sqlstm.sqhstl[2] = (unsigned long )401;
+    sqlstm.sqhsts[2] = (         int  )0;
+    sqlstm.sqindv[2] = (         short *)0;
+    sqlstm.sqinds[2] = (         int  )0;
+    sqlstm.sqharm[2] = (unsigned long )0;
+    sqlstm.sqadto[2] = (unsigned short )0;
+    sqlstm.sqtdso[2] = (unsigned short )0;
+    sqlstm.sqphsv = sqlstm.sqhstv;
+    sqlstm.sqphsl = sqlstm.sqhstl;
+    sqlstm.sqphss = sqlstm.sqhsts;
+    sqlstm.sqpind = sqlstm.sqindv;
+    sqlstm.sqpins = sqlstm.sqinds;
+    sqlstm.sqparm = sqlstm.sqharm;
+    sqlstm.sqparc = sqlstm.sqharc;
+    sqlstm.sqpadto = sqlstm.sqadto;
+    sqlstm.sqptdso = sqlstm.sqtdso;
+    sqlcxt((void **)0, &sqlctx, &sqlstm, &sqlfpn);
 }
 
 
-			for(indice_res=0;indice_res<100;indice_res++)
-				{
-				printf(resultat[indice_res]);
-				printf("\n");
-				}
-			break;
-		case 2:
-	
-			break;
-	
-		case 3:
-	
-			break;
-	
-		case 4:
-	
-			break;
-			
-		case 5:
-	
-			break;
-			
-		case 6:
+				printf("cursor: %d", cursor);
+				int pas_de_titre=0;
+				while ((sqlca.sqlcode>=0) && (sqlca.sqlcode!=143) && (pas_de_titre==0) && compteur < 10)
+					{
+					/* EXEC SQL FETCH cursor INTO :titre, :auteur, :texte; */ 
+
+{
+     struct sqlexd sqlstm;
+     sqlstm.sqlvsn = 13;
+     sqlstm.arrsiz = 4;
+     sqlstm.sqladtp = &sqladt;
+     sqlstm.sqltdsp = &sqltds;
+     sqlstm.iters = (unsigned int  )1;
+     sqlstm.offset = (unsigned int  )78;
+     sqlstm.selerr = (unsigned short)1;
+     sqlstm.sqlpfmem = (unsigned int  )0;
+     sqlstm.cud = sqlcud0;
+     sqlstm.sqlest = (unsigned char  *)&sqlca;
+     sqlstm.sqlety = (unsigned short)4352;
+     sqlstm.occurs = (unsigned int  )0;
+     sqlstm.sqfoff = (         int )0;
+     sqlstm.sqfmod = (unsigned int )2;
+     sqlstm.sqhstv[0] = (unsigned char  *)titre;
+     sqlstm.sqhstl[0] = (unsigned long )41;
+     sqlstm.sqhsts[0] = (         int  )0;
+     sqlstm.sqindv[0] = (         short *)0;
+     sqlstm.sqinds[0] = (         int  )0;
+     sqlstm.sqharm[0] = (unsigned long )0;
+     sqlstm.sqadto[0] = (unsigned short )0;
+     sqlstm.sqtdso[0] = (unsigned short )0;
+     sqlstm.sqhstv[1] = (unsigned char  *)auteur;
+     sqlstm.sqhstl[1] = (unsigned long )31;
+     sqlstm.sqhsts[1] = (         int  )0;
+     sqlstm.sqindv[1] = (         short *)0;
+     sqlstm.sqinds[1] = (         int  )0;
+     sqlstm.sqharm[1] = (unsigned long )0;
+     sqlstm.sqadto[1] = (unsigned short )0;
+     sqlstm.sqtdso[1] = (unsigned short )0;
+     sqlstm.sqhstv[2] = (unsigned char  *)texte;
+     sqlstm.sqhstl[2] = (unsigned long )401;
+     sqlstm.sqhsts[2] = (         int  )0;
+     sqlstm.sqindv[2] = (         short *)0;
+     sqlstm.sqinds[2] = (         int  )0;
+     sqlstm.sqharm[2] = (unsigned long )0;
+     sqlstm.sqadto[2] = (unsigned short )0;
+     sqlstm.sqtdso[2] = (unsigned short )0;
+     sqlstm.sqphsv = sqlstm.sqhstv;
+     sqlstm.sqphsl = sqlstm.sqhstl;
+     sqlstm.sqphss = sqlstm.sqhsts;
+     sqlstm.sqpind = sqlstm.sqindv;
+     sqlstm.sqpins = sqlstm.sqinds;
+     sqlstm.sqparm = sqlstm.sqharm;
+     sqlstm.sqparc = sqlstm.sqharc;
+     sqlstm.sqpadto = sqlstm.sqadto;
+     sqlstm.sqptdso = sqlstm.sqtdso;
+     sqlcxt((void **)0, &sqlctx, &sqlstm, &sqlfpn);
+}
+
+
+					printf("%d\n", sqlca.sqlcode>=0);
+					printf("%d-%s by %s", compteur, titre, auteur);
+					printf("\n");
+					if((titre=="\0") || (auteur=="\0"))
+						pas_de_titre=1;
+					else
+						printf("%c, %c", titre[0], auteur[0]); 
+					compteur++;
+					}
+				printf("Quel article choississez-vous?");
+				scanf("%d", &choix);
+				/* EXEC SQL FETCH ABSOLUTE :choix cursor INTO :titre, :auteur, :texte; */ 
+
+{
+    struct sqlexd sqlstm;
+    sqlstm.sqlvsn = 13;
+    sqlstm.arrsiz = 4;
+    sqlstm.sqladtp = &sqladt;
+    sqlstm.sqltdsp = &sqltds;
+    sqlstm.iters = (unsigned int  )1;
+    sqlstm.offset = (unsigned int  )105;
+    sqlstm.selerr = (unsigned short)1;
+    sqlstm.sqlpfmem = (unsigned int  )0;
+    sqlstm.cud = sqlcud0;
+    sqlstm.sqlest = (unsigned char  *)&sqlca;
+    sqlstm.sqlety = (unsigned short)4352;
+    sqlstm.occurs = (unsigned int  )0;
+    sqlstm.sqfoff = (         int )choix;
+    sqlstm.sqfmod = (unsigned int )32;
+    sqlstm.sqhstv[0] = (unsigned char  *)&choix;
+    sqlstm.sqhstl[0] = (unsigned long )sizeof(int);
+    sqlstm.sqhsts[0] = (         int  )0;
+    sqlstm.sqindv[0] = (         short *)0;
+    sqlstm.sqinds[0] = (         int  )0;
+    sqlstm.sqharm[0] = (unsigned long )0;
+    sqlstm.sqadto[0] = (unsigned short )0;
+    sqlstm.sqtdso[0] = (unsigned short )0;
+    sqlstm.sqhstv[1] = (unsigned char  *)titre;
+    sqlstm.sqhstl[1] = (unsigned long )41;
+    sqlstm.sqhsts[1] = (         int  )0;
+    sqlstm.sqindv[1] = (         short *)0;
+    sqlstm.sqinds[1] = (         int  )0;
+    sqlstm.sqharm[1] = (unsigned long )0;
+    sqlstm.sqadto[1] = (unsigned short )0;
+    sqlstm.sqtdso[1] = (unsigned short )0;
+    sqlstm.sqhstv[2] = (unsigned char  *)auteur;
+    sqlstm.sqhstl[2] = (unsigned long )31;
+    sqlstm.sqhsts[2] = (         int  )0;
+    sqlstm.sqindv[2] = (         short *)0;
+    sqlstm.sqinds[2] = (         int  )0;
+    sqlstm.sqharm[2] = (unsigned long )0;
+    sqlstm.sqadto[2] = (unsigned short )0;
+    sqlstm.sqtdso[2] = (unsigned short )0;
+    sqlstm.sqhstv[3] = (unsigned char  *)texte;
+    sqlstm.sqhstl[3] = (unsigned long )401;
+    sqlstm.sqhsts[3] = (         int  )0;
+    sqlstm.sqindv[3] = (         short *)0;
+    sqlstm.sqinds[3] = (         int  )0;
+    sqlstm.sqharm[3] = (unsigned long )0;
+    sqlstm.sqadto[3] = (unsigned short )0;
+    sqlstm.sqtdso[3] = (unsigned short )0;
+    sqlstm.sqphsv = sqlstm.sqhstv;
+    sqlstm.sqphsl = sqlstm.sqhstl;
+    sqlstm.sqphss = sqlstm.sqhsts;
+    sqlstm.sqpind = sqlstm.sqindv;
+    sqlstm.sqpins = sqlstm.sqinds;
+    sqlstm.sqparm = sqlstm.sqharm;
+    sqlstm.sqparc = sqlstm.sqharc;
+    sqlstm.sqpadto = sqlstm.sqadto;
+    sqlstm.sqptdso = sqlstm.sqtdso;
+    sqlcxt((void **)0, &sqlctx, &sqlstm, &sqlfpn);
+}
+
+
+				printf("Contenu:\n%s", texte);
+				/* EXEC SQL CLOSE cursor; */ 
+
+{
+    struct sqlexd sqlstm;
+    sqlstm.sqlvsn = 13;
+    sqlstm.arrsiz = 4;
+    sqlstm.sqladtp = &sqladt;
+    sqlstm.sqltdsp = &sqltds;
+    sqlstm.iters = (unsigned int  )1;
+    sqlstm.offset = (unsigned int  )136;
+    sqlstm.cud = sqlcud0;
+    sqlstm.sqlest = (unsigned char  *)&sqlca;
+    sqlstm.sqlety = (unsigned short)4352;
+    sqlstm.occurs = (unsigned int  )0;
+    sqlcxt((void **)0, &sqlctx, &sqlstm, &sqlfpn);
+}
+
+
+				break;
+			case 2:
 		
+				break;
+		
+			case 3:
+		
+				break;
+		
+			case 4:
+		
+				break;
+				
+			case 5:
+		
+				break;
+				
+			case 6:
+			
 			break;
 			
-		default:
-			printf("Saissisez un numéro correcte\n");
+			default:
+				printf("Saissisez un numéro correcte\n");
+			}
 		}
+	while(choix!=1);
 
 	}
 
@@ -478,7 +677,7 @@ void deconnexion()
  sqlstm.sqladtp = &sqladt;
  sqlstm.sqltdsp = &sqltds;
  sqlstm.iters = (unsigned int  )1;
- sqlstm.offset = (unsigned int  )59;
+ sqlstm.offset = (unsigned int  )151;
  sqlstm.cud = sqlcud0;
  sqlstm.sqlest = (unsigned char  *)&sqlca;
  sqlstm.sqlety = (unsigned short)4352;

@@ -2,6 +2,8 @@
 #include <stdio.h>
 
 #define TITRE_SIZE 40
+#define TEXT_SIZE 400
+#define AUTHOR_SIZE 30
 
 EXEC SQL INCLUDE SQLCA.H;
 
@@ -15,11 +17,13 @@ int main(void)
 	connexion();
 	char action;
 	
+	printf("Souhaitez-vous faire une recherche(R) ou créer une table(C) ?\n");
+	scanf("%c", &action);
 	do
 		{
 		printf("Souhaitez-vous faire une recherche(R) ou créer une table(C) ?\n");
 		scanf("%c", &action);
-
+		printf("%c", action);
 		if(action=='r' || action=='R')
 			{
 			recherche();
@@ -58,9 +62,13 @@ void recherche()
 	{
 	EXEC SQL BEGIN DECLARE SECTION;
 	char larecherche[40];
-	char resultat[100][TITRE_SIZE+1];
+	int cursor;
+	char titre[TITRE_SIZE+1];
+	char auteur[AUTHOR_SIZE+1];
+	char texte[TEXT_SIZE+1];
+	int choix;
 	EXEC SQL END DECLARE SECTION;
-	int indice_res, choix;
+	int indice_res, compteur;
 	printf("\n\n\n\n\n\n\n\n\n");
 	printf("Entrez le numéro de la catégorie choisie\n");
 	printf("1.Auteur\n");
@@ -71,42 +79,63 @@ void recherche()
 	printf("6.Sujets les plus vus\n");
 	printf("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n");
 	scanf("%d",&choix);
-	printf("Recherche: ");
-	sscanf("%s",larecherche);
-
-	switch (choix)
+	do
 		{
-		case 1:
-			EXEC SQL select titre into :resultat from Contenu where Auteur = :larecherche;
-			for(indice_res=0;indice_res<100;indice_res++)
-				{
-				printf(resultat[indice_res]);
-				printf("\n");
-				}
-			break;
-		case 2:
-	
-			break;
-	
-		case 3:
-	
-			break;
-	
-		case 4:
-	
-			break;
-			
-		case 5:
-	
-			break;
-			
-		case 6:
+		printf("Recherche: ");
+		scanf("%s",larecherche);
 		
+		switch (choix)
+			{
+			case 1:
+				compteur = 0;
+				EXEC SQL DECLARE cursor SCROLL CURSOR FOR SELECT titre, auteur, texte FROM contenu;// where auteur = :larecherche;
+				EXEC SQL OPEN cursor; 
+				EXEC SQL FETCH ABSOLUTE 0 cursor INTO :titre, :auteur, :texte;
+				printf("cursor: %d", cursor);
+				int pas_de_titre=0;
+				while ((sqlca.sqlcode>=0) && (sqlca.sqlcode!=143) && (pas_de_titre==0) && compteur < 10)
+					{
+					EXEC SQL FETCH cursor INTO :titre, :auteur, :texte;
+					printf("%d\n", sqlca.sqlcode>=0);
+					printf("%d-%s by %s", compteur, titre, auteur);
+					printf("\n");
+					if((titre=="\0") || (auteur=="\0"))
+						pas_de_titre=1;
+					else
+						printf("%c, %c", titre[0], auteur[0]); 
+					compteur++;
+					}
+				printf("Quel article choississez-vous?");
+				scanf("%d", &choix);
+				EXEC SQL FETCH ABSOLUTE :choix cursor INTO :titre, :auteur, :texte;
+				printf("Contenu:\n%s", texte);
+				EXEC SQL CLOSE cursor;
+				break;
+			case 2:
+		
+				break;
+		
+			case 3:
+		
+				break;
+		
+			case 4:
+		
+				break;
+				
+			case 5:
+		
+				break;
+				
+			case 6:
+			
 			break;
 			
-		default:
-			printf("Saissisez un numéro correcte\n");
+			default:
+				printf("Saissisez un numéro correcte\n");
+			}
 		}
+	while(choix!=1);
 
 	}
 
